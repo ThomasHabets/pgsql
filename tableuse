@@ -1,0 +1,11 @@
+SELECT schemaname || '.' || relname AS "relation",
+       (heap_blks_read + heap_blks_hit) AS read,
+       100 * (heap_blks_hit::float / (1 + heap_blks_read + heap_blks_hit)) AS read_hit,
+       idx_blks_read + idx_blks_hit AS index_read,
+       100 * (idx_blks_hit::float / (1 + idx_blks_read + idx_blks_hit)) AS index_hit,
+       toast_blks_read + toast_blks_hit AS toast_read,
+       100 * (toast_blks_hit::float / (1 + toast_blks_read + toast_blks_hit)) AS toast_read_hit,
+       tidx_blks_read + tidx_blks_hit AS toast_idx_read,
+       100 * (tidx_blks_hit::float / (1 + tidx_blks_read + tidx_blks_hit)) AS toast_idx_read_hit
+FROM pg_statio_user_tables
+ORDER BY "relation"

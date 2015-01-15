@@ -1,0 +1,3 @@
+SELECT datname,usename,application_name,current_query
+FROM pg_stat_activity
+ORDER BY application_name

@@ -1,0 +1,14 @@
+SELECT nspname || '.' || relname AS "relation",
+       C.relnatts AS columns,
+       C.relchecks AS constraints,
+       (SELECT COUNT(*) FROM pg_rewrite WHERE ev_class=C.oid) AS rules,
+       (SELECT COUNT(*) FROM pg_trigger WHERE tgrelid=C.oid) AS triggers,
+       (SELECT COUNT(*) FROM pg_index WHERE indrelid=C.oid) AS indexes,
+       C.reltuples::bigint AS num_rows,
+       pg_size_pretty(pg_total_relation_size(C.oid)) AS "total_size"
+FROM pg_class C
+LEFT JOIN pg_namespace N ON (N.oid = C.relnamespace)
+WHERE nspname NOT IN ('pg_catalog', 'information_schema')
+  AND C.relkind IN ('t', 'r')
+  AND nspname !~ '^pg_toast'
+ORDER BY num_rows DESC
